@@ -3,6 +3,7 @@ using Nast.SimpleMediator.Internal;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Linq;
 
 namespace Nast.SimpleMediator
 {
@@ -44,7 +45,7 @@ namespace Nast.SimpleMediator
                 throw new ArgumentNullException(nameof(request));
 
             var result = await Send(request, typeof(TResponse), cancellationToken);
-            return (TResponse)result;
+            return result is null ? default(TResponse)! : (TResponse)result;
         }
 
         /// <inheritdoc />
@@ -168,10 +169,19 @@ namespace Nast.SimpleMediator
 
             var behaviors = _multiInstanceFactory(metadata.BehaviorsType);
 
-            return (RequestHandlerBase)Activator.CreateInstance(
-                metadata.HandlerWrapperType,
-                handler,
-                behaviors)!;
+            // Cast the behaviors to the correct type using reflection
+            var castMethod = typeof(Enumerable).GetMethod("Cast")?.MakeGenericMethod(metadata.BehaviorsType);
+            var typedBehaviors = castMethod?.Invoke(null, new object[] { behaviors });
+
+            // Use reflection to create the wrapper instance more reliably
+            // The constructor takes: IRequestHandler<TRequest, TResponse> handler, IEnumerable<IPipelineBehavior<TRequest, TResponse>> behaviors
+            var constructorTypes = new[] { metadata.HandlerInterfaceType, typeof(IEnumerable<>).MakeGenericType(metadata.BehaviorsType) };
+            var constructor = metadata.HandlerWrapperType.GetConstructor(constructorTypes);
+            
+            if (constructor == null)
+                throw new InvalidOperationException($"Constructor not found for {metadata.HandlerWrapperType.Name}. Expected types: {string.Join(", ", constructorTypes.Select(t => t.Name))}");
+
+            return (RequestHandlerBase)constructor.Invoke(new object[] { handler, typedBehaviors! });
         }
 
         /// <summary>
@@ -179,7 +189,7 @@ namespace Nast.SimpleMediator
         /// </summary>
         /// <param name="requestType">Type of the request</param>
         /// <returns>The response type</returns>
-        /// <exception cref="InvalidOperationException">If the request type does not implement IRequest<TResponse></exception>
+        /// <exception cref="InvalidOperationException">If the request type does not implement IRequest{TResponse}</exception>
         private static Type GetResponseType(Type requestType)
         {
             var requestInterface = requestType.GetInterfaces()
@@ -195,7 +205,7 @@ namespace Nast.SimpleMediator
         /// </summary>
         /// <param name="requestType">Type of the request</param>
         /// <returns>The response type</returns>
-        /// <exception cref="InvalidOperationException">If the request type does not implement IStreamRequest<TResponse></exception>
+        /// <exception cref="InvalidOperationException">If the request type does not implement IStreamRequest{T}</exception>
         private static Type GetStreamResponseType(Type requestType)
         {
             var requestInterface = requestType.GetInterfaces()
@@ -215,16 +225,16 @@ namespace Nast.SimpleMediator
         /// <summary>
         /// Gets or sets the handler interface type.
         /// </summary>
-        public Type HandlerInterfaceType { get; set; }
+        public Type HandlerInterfaceType { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the handler wrapper type.
         /// </summary>
-        public Type HandlerWrapperType { get; set; }
+        public Type HandlerWrapperType { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the behaviors type.
         /// </summary>
-        public Type BehaviorsType { get; set; }
+        public Type BehaviorsType { get; set; } = null!;
     }
 }

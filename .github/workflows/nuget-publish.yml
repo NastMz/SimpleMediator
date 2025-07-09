@@ -64,18 +64,18 @@ jobs:
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
       - name: Build
-        run: dotnet build ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+        run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
 
       - name: Test
         run: |
           if [ -f "Tests/Nast.SimpleMediator.Tests.csproj" ]; then
-            dotnet test Tests/Nast.SimpleMediator.Tests.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal --logger trx --results-directory ./TestResults
+            dotnet test Tests/Nast.SimpleMediator.Tests.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --logger trx --results-directory ./TestResults
           else
             echo "No tests found, skipping test execution"
           fi
 
       - name: Pack
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --output ./artifacts
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --output ./artifacts
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

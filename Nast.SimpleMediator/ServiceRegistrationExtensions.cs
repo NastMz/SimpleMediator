@@ -54,14 +54,14 @@ namespace Nast.SimpleMediator
             {
                 return new Sender(
                     sp.GetService,
-                    t => sp.GetServices(t)
+                    t => sp.GetServices(t).Where(s => s != null)!
                 );
             });
 
             services.AddScoped<IPublisher, Publisher>(sp =>
             {
                 return new Publisher(
-                    t => sp.GetServices(t)
+                    t => sp.GetServices(t).Where(s => s != null)!
                 );
             });
 
@@ -69,7 +69,7 @@ namespace Nast.SimpleMediator
             {
                 return new Mediator(
                     sp.GetService,
-                    t => sp.GetServices(t)
+                    t => sp.GetServices(t).Where(s => s != null)!
                 );
             });
 
