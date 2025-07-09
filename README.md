@@ -1,21 +1,22 @@
 ﻿# SimpleMediator
 
-A simple and efficient implementation of the Mediator pattern for .NET 8 applications, inspired by MediatR but with a minimalist approach and high performance focus.
+A lightweight and efficient implementation of the Mediator pattern for .NET 8 applications. SimpleMediator provides a clean abstraction for handling commands, queries, and notifications while maintaining simplicity and performance.
 
-> **Note**: This library is designed for exploration and learning purposes. While fully functional and well-tested, it is not intended as a commercial solution.
+> **Note**: This library is designed as an educational implementation and is not intended as a commercial solution.
 
 ## Features
 
-- ✅ **Mediator Pattern**: Decoupling between components through a central mediator
-- ✅ **Request/Response**: Handle commands and queries with typed responses
-- ✅ **Notifications**: Event system for one-to-many communication
-- ✅ **Stream Requests**: Support for asynchronous data streams
-- ✅ **Dependency Injection**: Full integration with Microsoft.Extensions.DependencyInjection
-- ✅ **Auto Registration**: Automatic handler scanning in assemblies
-- ✅ **Extensibility**: Support for custom behaviors
-- ✅ **.NET 8**: Built for .NET 8 with latest language features
+- **Request/Response Pattern**: Handle commands and queries with typed responses
+- **Notifications**: Event-driven architecture with one-to-many communication
+- **Stream Requests**: Support for asynchronous data streams using `IAsyncEnumerable`
+- **Dependency Injection**: Seamless integration with Microsoft.Extensions.DependencyInjection
+- **Auto Registration**: Automatic discovery and registration of handlers from assemblies
+- **Custom Behaviors**: Extensible pipeline for cross-cutting concerns
+- **.NET 8 Native**: Built specifically for .NET 8 with modern C# features
 
 ## Installation
+
+Add the package reference to your project:
 
 ```bash
 dotnet add package Nast.SimpleMediator
@@ -23,41 +24,46 @@ dotnet add package Nast.SimpleMediator
 
 ## Quick Start
 
-### Basic Setup
+Register SimpleMediator in your dependency injection container:
 
 ```csharp
 using Nast.SimpleMediator;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Register SimpleMediator with automatic assembly scanning builder.Services.AddMediator();
+// Basic registration - scans all loaded assemblies
+builder.Services.AddMediator();
+
+// Register specific assemblies
+builder.Services.AddMediator(typeof(Program).Assembly);
+
+// Advanced configuration
+builder.Services.AddMediator(options =>
+{
+    options.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+    options.AddBehavior<ILoggingBehavior, LoggingBehavior>();
+});
+
 var app = builder.Build();
-```
-
-### Advanced Configuration
-
-```csharp
-// Register with specific assemblies 
-builder.Services.AddMediator(typeof(Program).Assembly, typeof(MyHandlersAssembly).Assembly);
-
-// Configuration with custom options 
-builder.Services.AddMediator(options => { options.RegisterServicesFromAssemblies(typeof(Program).Assembly); options.AddBehavior<IMyBehavior, MyBehaviorImplementation>(); });
 ```
 
 ## Usage
 
-### Requests (Commands/Queries)
+### Requests and Responses
 
-#### 1. Define a Request
+SimpleMediator supports both commands (requests without responses) and queries (requests with responses).
+
+#### Define a Request
 
 ```csharp
-// Request with response 
+// Query with response
 public record GetUserQuery(int UserId) : IRequest<User>;
 
-// Request without response (Command) 
+// Command without response
 public record CreateUserCommand(string Name, string Email) : IRequest;
 ```
 
-#### 2. Implement the Handler
+#### Implement Request Handlers
 
 ```csharp
 public class GetUserHandler : IRequestHandler<GetUserQuery, User>
@@ -92,7 +98,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand>
 }
 ```
 
-#### 3. Use in Controllers
+#### Use in Controllers
 
 ```csharp
 [ApiController]
@@ -120,15 +126,17 @@ public class UsersController : ControllerBase
 }
 ```
 
-### Notifications (Events)
+### Notifications
 
-#### 1. Define a Notification
+Notifications allow decoupled event-driven communication where multiple handlers can respond to a single event.
+
+#### Define a Notification
 
 ```csharp
 public record UserCreatedNotification(int UserId, string Email) : INotification;
 ```
 
-#### 2. Implement Handlers
+#### Implement Notification Handlers
 
 ```csharp
 public class EmailNotificationHandler : INotificationHandler<UserCreatedNotification>
@@ -162,7 +170,7 @@ public class LoggingNotificationHandler : INotificationHandler<UserCreatedNotifi
 }
 ```
 
-#### 3. Publish Notifications
+#### Publish Notifications
 
 ```csharp
 public class CreateUserHandler : IRequestHandler<CreateUserCommand>
@@ -181,32 +189,37 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand>
         var user = new User(request.Name, request.Email);
         await _repository.AddAsync(user);
 
-        // Publish event - all handlers will be executed
+        // Publish notification - all handlers will be executed
         await _mediator.Publish(new UserCreatedNotification(user.Id, user.Email));
     }
 }
 ```
 
-### Stream Requests (Data Streams)
+### Stream Requests
 
-#### 1. Define a Stream Request
+Stream requests enable asynchronous data streaming using `IAsyncEnumerable<T>`.
+
+#### Define a Stream Request
 
 ```csharp
 public record GetUsersStreamQuery(string Filter) : IStreamRequest<User>;
 ```
 
-#### 2. Implement the Handler
+#### Implement Stream Handler
 
 ```csharp
 public class GetUsersStreamHandler : IStreamRequestHandler<GetUsersStreamQuery, User>
 {
     private readonly IUserRepository _repository;
+
     public GetUsersStreamHandler(IUserRepository repository)
     {
         _repository = repository;
     }
 
-    public async IAsyncEnumerable<User> Handle(GetUsersStreamQuery request, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<User> Handle(
+        GetUsersStreamQuery request,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await foreach (var user in _repository.GetFilteredUsersAsync(request.Filter))
         {
@@ -217,68 +230,66 @@ public class GetUsersStreamHandler : IStreamRequestHandler<GetUsersStreamQuery, 
 }
 ```
 
-#### 3. Consume the Stream
+#### Consume the Stream
 
 ```csharp
 [HttpGet("stream")]
 public async IAsyncEnumerable<User> GetUsersStream(string filter)
-{ 
-    await foreach (var user in _mediator.CreateStream(new GetUsersStreamQuery(filter))) 
-    { 
-        yield return user; 
-    } 
+{
+    await foreach (var user in _mediator.CreateStream(new GetUsersStreamQuery(filter)))
+    {
+        yield return user;
+    }
 }
 ```
 
 ## Extension Methods
 
-### Mediator Extensions
+SimpleMediator provides several convenience extension methods:
 
 ```csharp
-// Send multiple notifications 
-var notifications = new List<INotification> 
-{ 
-    new UserCreatedNotification(1, "user1@example.com"), 
-    new UserCreatedNotification(2, "user2@example.com") 
+// Send multiple notifications
+var notifications = new List<INotification>
+{
+    new UserCreatedNotification(1, "user1@example.com"),
+    new UserCreatedNotification(2, "user2@example.com")
 };
 
 await _mediator.PublishAll(notifications);
-```
 
-### Publisher Extensions
-
-```csharp
-// Use publisher directly 
+// Use publisher directly
 await _publisher.PublishAll(notifications);
 ```
 
 ## Core Interfaces
 
-### Main Interfaces
+### Main Abstractions
 
-- `IMediator`: Main interface that combines `ISender` and `IPublisher`
-- `ISender`: For sending requests and creating streams
-- `IPublisher`: For publishing notifications
+- **`IMediator`**: Primary interface combining `ISender` and `IPublisher`
+- **`ISender`**: Handles request/response operations and stream creation
+- **`IPublisher`**: Manages notification publishing
 
-### Request Interfaces
+### Request Abstractions
 
-- `IRequest<TResponse>`: Request that expects a response
-- `IRequest`: Request without response (inherits from `IRequest<Unit>`)
-- `IStreamRequest<TResponse>`: Request for data streams
+- **`IRequest<TResponse>`**: Request expecting a typed response
+- **`IRequest`**: Request without response (command pattern)
+- **`IStreamRequest<TResponse>`**: Request for streaming data
 
-### Handler Interfaces
+### Handler Abstractions
 
-- `IRequestHandler<TRequest, TResponse>`: Handler for requests with response
-- `IRequestHandler<TRequest>`: Handler for requests without response
-- `INotificationHandler<TNotification>`: Handler for notifications
-- `IStreamRequestHandler<TRequest, TResponse>`: Handler for stream requests
+- **`IRequestHandler<TRequest, TResponse>`**: Handles requests with responses
+- **`IRequestHandler<TRequest>`**: Handles requests without responses
+- **`INotificationHandler<TNotification>`**: Handles notifications
+- **`IStreamRequestHandler<TRequest, TResponse>`**: Handles stream requests
 
 ## Custom Behaviors
 
+You can extend SimpleMediator with custom behaviors for cross-cutting concerns:
+
 ```csharp
-public interface ILoggingBehavior 
-{ 
-    Task ExecuteAsync(Func<Task> next); 
+public interface ILoggingBehavior
+{
+    Task ExecuteAsync(Func<Task> next);
 }
 
 public class LoggingBehavior : ILoggingBehavior
@@ -292,42 +303,33 @@ public class LoggingBehavior : ILoggingBehavior
 
     public async Task ExecuteAsync(Func<Task> next)
     {
-        _logger.LogInformation("Executing behavior");
+        _logger.LogInformation("Executing operation");
         await next();
-        _logger.LogInformation("Behavior executed");
+        _logger.LogInformation("Operation completed");
     }
 }
 
-// Registration 
-builder.Services.AddMediator(options => { 
-    options.AddBehavior<ILoggingBehavior, LoggingBehavior>(); 
+// Register behavior
+builder.Services.AddMediator(options =>
+{
+    options.AddBehavior<ILoggingBehavior, LoggingBehavior>();
 });
 ```
 
 ## Requirements
 
-- .NET 8.0 or higher
-- Microsoft.Extensions.DependencyInjection.Abstractions 9.0.7
+- **.NET 8.0** or higher
+- **Microsoft.Extensions.DependencyInjection.Abstractions** 9.0.7
 
-## Comparison with MediatR
+## Architecture
 
-| Feature | SimpleMediator | MediatR |
-|---|---|---|
-| .NET 8 Native | ✅ | ❌ |
-| Size | Lightweight | Full-featured |
-| Performance | Optimized | Standard |
-| Complexity | Simple | Advanced |
-| Stream Support | ✅ | ✅ |
-| Behaviors | ✅ | ✅ |
+SimpleMediator follows a clean architecture approach with clear separation of concerns:
+
+- **Abstractions**: Core interfaces defining contracts
+- **Internal**: Implementation details hidden from consumers
+- **Extensions**: Convenience methods for common operations
+- **Registration**: Dependency injection configuration
 
 ## License
 
-MIT License (MIT) is available at [LICENSE](LICENSE).
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
----
-
-**SimpleMediator** - A simple and efficient alternative to MediatR for .NET 8
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
