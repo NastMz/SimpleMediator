@@ -1,6 +1,8 @@
 ﻿using Nast.SimpleMediator.Abstractions;
 using Nast.SimpleMediator.Internal;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace Nast.SimpleMediator
 {
@@ -38,6 +40,9 @@ namespace Nast.SimpleMediator
         /// <inheritdoc />
         public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             var result = await Send(request, typeof(TResponse), cancellationToken);
             return (TResponse)result;
         }
@@ -78,9 +83,33 @@ namespace Nast.SimpleMediator
             var handlerType = typeof(IStreamRequestHandler<,>).MakeGenericType(requestType, responseType);
             var handler = _singleInstanceFactory(handlerType);
 
-            return handler == null
-                ? throw new InvalidOperationException($"No stream handler registered for {requestType.Name}")
-                : (IAsyncEnumerable<object?>)((dynamic)handler).Handle((dynamic)request, cancellationToken).Cast<object?>();
+            if (handler == null)
+                throw new InvalidOperationException($"No stream handler registered for {requestType.Name}");
+
+            // Use reflection to call the Handle method safely
+            var handleMethod = handlerType.GetMethod("Handle");
+            if (handleMethod == null)
+                throw new InvalidOperationException($"Handle method not found on {handlerType.Name}");
+
+            var result = handleMethod.Invoke(handler, new object[] { request, cancellationToken });
+            
+            // Convert the result to IAsyncEnumerable<object?> using the generic helper
+            var wrapperMethod = typeof(Sender).GetMethod(nameof(WrapAsyncEnumerable), BindingFlags.NonPublic | BindingFlags.Static);
+            var genericWrapper = wrapperMethod?.MakeGenericMethod(responseType);
+            
+            return (IAsyncEnumerable<object?>?)genericWrapper?.Invoke(null, new[] { result }) 
+                ?? throw new InvalidOperationException("Failed to wrap async enumerable");
+        }
+
+        /// <summary>
+        /// Wraps a typed async enumerable as an object async enumerable.
+        /// </summary>
+        private static async IAsyncEnumerable<object?> WrapAsyncEnumerable<T>(IAsyncEnumerable<T> source)
+        {
+            await foreach (var item in source)
+            {
+                yield return item;
+            }
         }
 
         /// <summary>

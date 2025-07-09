@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aka.ms/VSTestPlatform/TestPlatformSchema",
+  "TestRunParameters": {
+    "DisableAppDomain": true,
+    "DisableParallelization": false,
+    "MaxCpuCount": 0
+  },
+  "RunConfiguration": {
+    "MaxCpuCount": 0,
+    "TargetPlatform": "x64",
+    "TargetFramework": "net8.0",
+    "TestAdaptersPaths": [],
+    "ResultsDirectory": "./TestResults",
+    "CollectSourceInformation": true,
+    "DisableAppDomain": true,
+    "DisableParallelization": false
+  },
+  "DataCollectionRunSettings": {
+    "DataCollectors": [
+      {
+        "FriendlyName": "Code Coverage",
+        "Enabled": true,
+        "Configuration": {
+          "Format": "cobertura",
+          "Exclude": "[*.Tests]*,[*.TestData]*"
+        }
+      }
+    ]
+  },
+  "MSTest": {
+    "Parallelize": {
+      "Workers": 0,
+      "Scope": "MethodLevel"
+    }
+  }
+}

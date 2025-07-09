@@ -101,7 +101,7 @@ dotnet build $ProjectPath --configuration $Configuration --no-restore
 $TestProject = "../Tests/Nast.SimpleMediator.Tests.csproj"
 if (Test-Path $TestProject) {
     Write-Host "Running tests..." -ForegroundColor Yellow
-    dotnet test $TestProject --configuration $Configuration --no-build --verbosity normal
+    dotnet test $TestProject --configuration $Configuration --no-build --verbosity normal --logger "console;verbosity=detailed"
 }
 
 # Pack the project

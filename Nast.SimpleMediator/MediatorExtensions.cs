@@ -34,6 +34,11 @@ namespace Nast.SimpleMediator
             IEnumerable<INotification> notifications,
             CancellationToken cancellationToken = default)
         {
+            if (mediator == null)
+                throw new ArgumentNullException(nameof(mediator));
+            if (notifications == null)
+                throw new ArgumentNullException(nameof(notifications));
+
             foreach (var notification in notifications)
             {
                 await mediator.Publish(notification, cancellationToken).ConfigureAwait(false);

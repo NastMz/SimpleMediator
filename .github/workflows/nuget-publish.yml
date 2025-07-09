@@ -69,7 +69,7 @@ jobs:
       - name: Test
         run: |
           if [ -f "Tests/Nast.SimpleMediator.Tests.csproj" ]; then
-            dotnet test Tests/Nast.SimpleMediator.Tests.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+            dotnet test Tests/Nast.SimpleMediator.Tests.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal --logger trx --results-directory ./TestResults
           else
             echo "No tests found, skipping test execution"
           fi
@@ -82,6 +82,13 @@ jobs:
         with:
           name: nuget-packages
           path: ./artifacts/*.nupkg
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: ./TestResults/**/*.trx
 
   publish:
     needs: build

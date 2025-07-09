@@ -42,6 +42,11 @@ namespace Nast.SimpleMediator
             this IServiceCollection services,
             Action<MediatorOptions> configureOptions)
         {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+            if (configureOptions == null)
+                throw new ArgumentNullException(nameof(configureOptions));
+
             var options = new MediatorOptions();
             configureOptions(options);
 
@@ -177,6 +182,9 @@ namespace Nast.SimpleMediator
         /// <returns>This instance for chaining</returns>
         public MediatorOptions RegisterServicesFromAssemblies(params Assembly[] assemblies)
         {
+            if (assemblies == null)
+                throw new ArgumentNullException(nameof(assemblies));
+
             foreach (var assembly in assemblies)
             {
                 Assemblies.Add(assembly);
