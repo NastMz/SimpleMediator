@@ -28,6 +28,7 @@ on:
 
 env:
   DOTNET_VERSION: "8.0.x"
+  SOLUTION_PATH: "Nast.SimpleMediator.sln"
   PROJECT_PATH: "Nast.SimpleMediator/Nast.SimpleMediator.csproj"
   BUILD_CONFIGURATION: ${{ github.event.inputs.configuration || 'Release' }}
 
@@ -61,10 +62,10 @@ jobs:
           echo "Updated version to ${{ github.event.inputs.version }}"
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }}
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
 
       - name: Build
-        run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+        run: dotnet build ${{ env.SOLUTION_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
 
       - name: Test
         run: |
