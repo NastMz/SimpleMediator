@@ -100,11 +100,21 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Verify API Key
+        run: |
+          if [ -z "${{ secrets.NUGET_API_KEY }}" ]; then
+            echo "❌ NUGET_API_KEY secret is not set"
+            exit 1
+          else
+            echo "✅ NUGET_API_KEY secret is configured"
+          fi
+
       - name: Publish to NuGet
         run: |
-          dotnet nuget push ./artifacts/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          echo "📦 Publishing NuGet packages..."
+          ls -la ./artifacts/
+          echo "Using source: https://api.nuget.org/v3/index.json"
+          for package in ./artifacts/*.nupkg; do
+            echo "Publishing: $package"
+            dotnet nuget push "$package" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+          done
