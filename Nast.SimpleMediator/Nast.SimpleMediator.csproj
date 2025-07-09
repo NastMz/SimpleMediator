@@ -20,7 +20,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>v1.0.2: Added README file to package. Fixed MissingMethodException in Release builds. Comprehensive test suite with 82 tests.</PackageReleaseNotes>
     <Copyright>Copyright (c) 2025 Nast</Copyright>
     
     <!-- Build Configuration -->
