@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Nast.SimpleMediator</id>
+    <version>1.0.0</version>
+    <title>SimpleMediator</title>
+    <authors>Kevin Martinez</authors>
+    <owners>NastMz</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/NastMz/SimpleMediator</projectUrl>
+    <description>A lightweight and efficient implementation of the Mediator pattern for .NET 8 applications. Provides clean abstractions for handling commands, queries, and notifications with simplicity and performance in mind.</description>
+    <summary>Lightweight Mediator pattern implementation for .NET 8 with request/response, notifications, and streaming support.</summary>
+    <releaseNotes>Initial release of SimpleMediator - A lightweight mediator pattern implementation for .NET 8.</releaseNotes>
+    <copyright>Copyright (c) 2025 Nast</copyright>
+    <tags>mediator cqrs command query notification pattern dotnet8 dependency-injection</tags>
+    <repository type="git" url="https://github.com/NastMz/SimpleMediator" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="9.0.7" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net8.0\Nast.SimpleMediator.dll" target="lib\net8.0\Nast.SimpleMediator.dll" />
+    <file src="bin\Release\net8.0\Nast.SimpleMediator.xml" target="lib\net8.0\Nast.SimpleMediator.xml" />
+    <file src="bin\Release\net8.0\Nast.SimpleMediator.pdb" target="lib\net8.0\Nast.SimpleMediator.pdb" />
+    <file src="..\README.md" target="README.md" />
+    <file src="..\LICENSE" target="LICENSE" />
+  </files>
+</package>

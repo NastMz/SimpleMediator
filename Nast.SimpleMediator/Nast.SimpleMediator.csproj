@@ -4,10 +4,42 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    
+    <!-- Package Information -->
+    <PackageId>Nast.SimpleMediator</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Kevin Martinez</Authors>
+    <Company>NastMz</Company>
+    <Product>SimpleMediator</Product>
+    <Description>A lightweight and efficient implementation of the Mediator pattern for .NET 8 applications. Provides clean abstractions for handling commands, queries, and notifications with simplicity and performance in mind.</Description>
+    <Summary>Lightweight Mediator pattern implementation for .NET 8 with request/response, notifications, and streaming support.</Summary>
+    <PackageTags>mediator;cqrs;command;query;notification;pattern;dotnet8;dependency-injection</PackageTags>
+    <PackageProjectUrl>https://github.com/yourusername/SimpleMediator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourusername/SimpleMediator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Initial release of SimpleMediator - A lightweight mediator pattern implementation for .NET 8.</PackageReleaseNotes>
+    <Copyright>Copyright (c) 2025 Nast</Copyright>
+    
+    <!-- Build Configuration -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    
+    <!-- Repository and Source Link -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
