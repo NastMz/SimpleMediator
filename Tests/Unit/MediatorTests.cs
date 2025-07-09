@@ -12,7 +12,7 @@ public class MediatorTests : IDisposable
     {
         var services = new ServiceCollection();
         services.AddMediator(typeof(TestQueryHandler).Assembly);
-        
+
         _serviceProvider = services.BuildServiceProvider();
         _mediator = _serviceProvider.GetRequiredService<IMediator>();
     }
@@ -188,7 +188,7 @@ public class MediatorTests : IDisposable
         });
 
         // Verify that cancellation was respected
-        results.Should().HaveCountLessOrEqualTo(3); // Allow for some items to be yielded before cancellation
+        results.Should().HaveCount(c => c <= 3, "some items should be yielded before cancellation");
     }
 
     [Fact]
