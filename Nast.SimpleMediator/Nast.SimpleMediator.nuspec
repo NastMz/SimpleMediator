@@ -11,7 +11,6 @@
     <projectUrl>https://github.com/NastMz/SimpleMediator</projectUrl>
     <description>A lightweight and efficient implementation of the Mediator pattern for .NET 8 applications. Provides clean abstractions for handling commands, queries, and notifications with simplicity and performance in mind.</description>
     <summary>Lightweight Mediator pattern implementation for .NET 8 with request/response, notifications, and streaming support.</summary>
-    <releaseNotes>Initial release of SimpleMediator - A lightweight mediator pattern implementation for .NET 8.</releaseNotes>
     <copyright>Copyright (c) 2025 Nast</copyright>
     <tags>mediator cqrs command query notification pattern dotnet8 dependency-injection</tags>
     <repository type="git" url="https://github.com/NastMz/SimpleMediator" />
