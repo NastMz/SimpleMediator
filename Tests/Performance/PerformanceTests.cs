@@ -47,7 +47,7 @@ public class PerformanceTests : IDisposable
 
         // Assert
         var avgTimePerRequest = (double)stopwatch.ElapsedMilliseconds / iterations;
-        avgTimePerRequest.Should().BeLessThan(1.0); // Less than 1ms per request on average
+        avgTimePerRequest.ShouldBeLessThan(1.0); // Less than 1ms per request on average
         
         // Output for diagnostics
         Console.WriteLine($"Average time per Send: {avgTimePerRequest:F3}ms");
@@ -79,10 +79,10 @@ public class PerformanceTests : IDisposable
 
         // Assert
         var avgTimePerPublish = (double)stopwatch.ElapsedMilliseconds / iterations;
-        avgTimePerPublish.Should().BeLessThan(2.0); // Less than 2ms per publish (has 2 handlers)
+        avgTimePerPublish.ShouldBeLessThan(2.0); // Less than 2ms per publish (has 2 handlers)
         
-        TestNotificationHandler.ReceivedMessages.Should().HaveCount(iterations + 1); // +1 for warmup
-        SecondTestNotificationHandler.ReceivedMessages.Should().HaveCount(iterations + 1);
+        TestNotificationHandler.ReceivedMessages.Count.ShouldBe(iterations + 1); // +1 for warmup
+        SecondTestNotificationHandler.ReceivedMessages.Count.ShouldBe(iterations + 1);
         
         // Output for diagnostics
         Console.WriteLine($"Average time per Publish: {avgTimePerPublish:F3}ms");
@@ -108,11 +108,11 @@ public class PerformanceTests : IDisposable
         stopwatch.Stop();
 
         // Assert
-        results.Should().HaveCount(streamSize);
-        results.Should().Equal(Enumerable.Range(0, streamSize));
+        results.Count.ShouldBe(streamSize);
+        results.ShouldBe(Enumerable.Range(0, streamSize));
         
         var avgTimePerItem = (double)stopwatch.ElapsedMilliseconds / streamSize;
-        avgTimePerItem.Should().BeLessThan(0.1); // Without artificial delays, should be very fast
+        avgTimePerItem.ShouldBeLessThan(0.1); // Without artificial delays, should be very fast
         
         // Output for diagnostics
         Console.WriteLine($"Average time per stream item: {avgTimePerItem:F4}ms");
@@ -149,7 +149,7 @@ public class PerformanceTests : IDisposable
         // Assert
         var totalRequests = concurrentRequests * requestsPerTask;
         var avgTimePerRequest = (double)stopwatch.ElapsedMilliseconds / totalRequests;
-        avgTimePerRequest.Should().BeLessThan(5.0); // Should handle concurrency well
+        avgTimePerRequest.ShouldBeLessThan(5.0); // Should handle concurrency well
         
         // Output for diagnostics
         Console.WriteLine($"Total concurrent requests: {totalRequests}");
@@ -179,7 +179,7 @@ public class PerformanceTests : IDisposable
 
         // Assert
         var avgTimePerNotification = (double)stopwatch.ElapsedMilliseconds / bulkSize;
-        avgTimePerNotification.Should().BeLessThan(2.0); // Should be efficient for bulk operations
+        avgTimePerNotification.ShouldBeLessThan(2.0); // Should be efficient for bulk operations
         
         // Count only our bulk notifications (not any contamination from other tests)
         var allMessages = TestNotificationHandler.ReceivedMessages.ToArray();
@@ -202,8 +202,8 @@ public class PerformanceTests : IDisposable
             Console.WriteLine($"First 5 messages: {string.Join(", ", allMessages.Take(5))}");
         }
         
-        bulkNotifications.Should().HaveCount(bulkSize + 1); // +1 for warmup
-        secondBulkNotifications.Should().HaveCount(bulkSize + 1);
+        bulkNotifications.Count.ShouldBe(bulkSize + 1); // +1 for warmup
+        secondBulkNotifications.Count.ShouldBe(bulkSize + 1);
         
         // Output for diagnostics
         Console.WriteLine($"Bulk publish of {bulkSize} notifications: {stopwatch.ElapsedMilliseconds}ms");
@@ -230,7 +230,7 @@ public class PerformanceTests : IDisposable
 
         // Assert
         var memoryPerOperation = memoryUsed / (iterations * 2); // Send + Publish per iteration
-        memoryPerOperation.Should().BeLessThan(1024); // Less than 1KB per operation
+        memoryPerOperation.ShouldBeLessThan(1024); // Less than 1KB per operation
         
         // Output for diagnostics
         Console.WriteLine($"Memory used for {iterations * 2} operations: {memoryUsed} bytes");
@@ -262,7 +262,7 @@ public class PerformanceTests : IDisposable
 
         // Assert
         var avgResolutionTime = (double)stopwatch.ElapsedMilliseconds / iterations;
-        avgResolutionTime.Should().BeLessThan(0.1); // Service resolution should be very fast
+        avgResolutionTime.ShouldBeLessThan(0.1); // Service resolution should be very fast
         
         // Output for diagnostics
         Console.WriteLine($"Average service resolution time: {avgResolutionTime:F4}ms");

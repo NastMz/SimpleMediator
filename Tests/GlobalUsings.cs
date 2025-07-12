@@ -1,5 +1,5 @@
 global using Xunit;
-global using FluentAssertions;
+global using Shouldly;
 global using Microsoft.Extensions.DependencyInjection;
 global using Nast.SimpleMediator;
 global using Nast.SimpleMediator.Abstractions;

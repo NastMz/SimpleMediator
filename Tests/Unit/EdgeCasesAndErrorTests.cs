@@ -93,7 +93,7 @@ public class EdgeCasesAndErrorTests : IDisposable
         var result = await _mediator.Send(queryWithEmptyString);
 
         // Assert
-        result.Should().Be("Processed: ");
+        result.ShouldBe("Processed: ");
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class EdgeCasesAndErrorTests : IDisposable
         var result = await _mediator.Send(queryWithSpecialChars);
 
         // Assert
-        result.Should().Be("Processed: Test with special chars: !@#$%^&*()_+-=[]{}|;:,.<>?");
+        result.ShouldBe("Processed: Test with special chars: !@#$%^&*()_+-=[]{}|;:,.<>?");
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class EdgeCasesAndErrorTests : IDisposable
         var result = await _mediator.Send(queryWithLongString);
 
         // Assert
-        result.Should().Be($"Processed: {longString}");
+        result.ShouldBe($"Processed: {longString}");
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class EdgeCasesAndErrorTests : IDisposable
         }
 
         // Assert
-        results.Should().BeEmpty();
+        results.ShouldBeEmpty();
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class EdgeCasesAndErrorTests : IDisposable
         cts.Cancel();
 
         // Assert
-        results.Should().Equal(0, 1, 2);
+        results.ShouldBe(new[] { 0, 1, 2 });
     }
 
     [Fact]
@@ -236,10 +236,10 @@ public class EdgeCasesAndErrorTests : IDisposable
             .Where(cmd => cmd.StartsWith("concurrent-"))
             .ToList();
         
-        concurrentCommands.Should().HaveCount(10);
+        concurrentCommands.Count.ShouldBe(10);
         for (int i = 0; i < 10; i++)
         {
-            concurrentCommands.Should().Contain($"concurrent-{i}");
+            concurrentCommands.ShouldContain($"concurrent-{i}");
         }
     }
 

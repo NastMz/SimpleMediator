@@ -18,9 +18,9 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         // Assert
         var serviceProvider = services.BuildServiceProvider();
         
-        serviceProvider.GetService<IMediator>().Should().NotBeNull();
-        serviceProvider.GetService<ISender>().Should().NotBeNull();
-        serviceProvider.GetService<IPublisher>().Should().NotBeNull();
+        serviceProvider.GetService<IMediator>().ShouldNotBeNull();
+        serviceProvider.GetService<ISender>().ShouldNotBeNull();
+        serviceProvider.GetService<IPublisher>().ShouldNotBeNull();
     }
 
     [Fact]
@@ -35,11 +35,11 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         // Assert
         var serviceProvider = services.BuildServiceProvider();
         
-        serviceProvider.GetService<IMediator>().Should().NotBeNull();
-        serviceProvider.GetService<IRequestHandler<TestQuery, string>>().Should().NotBeNull();
-        serviceProvider.GetService<IRequestHandler<TestCommand, Nast.SimpleMediator.Abstractions.Unit>>().Should().NotBeNull();
-        serviceProvider.GetService<INotificationHandler<TestNotification>>().Should().NotBeNull();
-        serviceProvider.GetService<IStreamRequestHandler<TestStreamQuery, int>>().Should().NotBeNull();
+        serviceProvider.GetService<IMediator>().ShouldNotBeNull();
+        serviceProvider.GetService<IRequestHandler<TestQuery, string>>().ShouldNotBeNull();
+        serviceProvider.GetService<IRequestHandler<TestCommand, Nast.SimpleMediator.Abstractions.Unit>>().ShouldNotBeNull();
+        serviceProvider.GetService<INotificationHandler<TestNotification>>().ShouldNotBeNull();
+        serviceProvider.GetService<IStreamRequestHandler<TestStreamQuery, int>>().ShouldNotBeNull();
     }
 
     [Fact]
@@ -58,9 +58,9 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         // Assert
         var serviceProvider = services.BuildServiceProvider();
         
-        serviceProvider.GetService<IMediator>().Should().NotBeNull();
-        serviceProvider.GetService<ITestBehavior>().Should().NotBeNull();
-        serviceProvider.GetService<ITestBehavior>().Should().BeOfType<TestBehavior>();
+        serviceProvider.GetService<IMediator>().ShouldNotBeNull();
+        serviceProvider.GetService<ITestBehavior>().ShouldNotBeNull();
+        serviceProvider.GetService<ITestBehavior>().ShouldBeOfType<TestBehavior>();
     }
 
     [Fact]
@@ -79,8 +79,8 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         var serviceProvider = services.BuildServiceProvider();
         var behavior = serviceProvider.GetService<ITestBehavior>();
         
-        behavior.Should().NotBeNull();
-        behavior.Should().BeOfType<TestBehavior>();
+        behavior.ShouldNotBeNull();
+        behavior.ShouldBeOfType<TestBehavior>();
     }
 
     [Fact]
@@ -95,13 +95,13 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         options.RegisterServicesFromAssemblies(assembly1, assembly2);
 
         // Assert
-        options.Should().NotBeNull();
+        options.ShouldNotBeNull();
         // Note: Assemblies property is internal, so we test through registration
         var services = new ServiceCollection();
         services.AddMediator(opt => opt.RegisterServicesFromAssemblies(assembly1, assembly2));
         
         var serviceProvider = services.BuildServiceProvider();
-        serviceProvider.GetService<IMediator>().Should().NotBeNull();
+        serviceProvider.GetService<IMediator>().ShouldNotBeNull();
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         services.AddMediator(opt => opt.AddBehavior(typeof(ITestBehavior), typeof(TestBehavior)));
         
         var serviceProvider = services.BuildServiceProvider();
-        serviceProvider.GetService<ITestBehavior>().Should().NotBeNull();
+        serviceProvider.GetService<ITestBehavior>().ShouldNotBeNull();
     }
 
     [Fact]
@@ -135,9 +135,9 @@ public class ServiceRegistrationExtensionsTests : IDisposable
         // Assert
         var serviceProvider = services.BuildServiceProvider();
         
-        serviceProvider.GetService<IMediator>().Should().NotBeNull();
-        serviceProvider.GetService<ITestBehavior>().Should().NotBeNull();
-        serviceProvider.GetService<IRequestHandler<TestQuery, string>>().Should().NotBeNull();
+        serviceProvider.GetService<IMediator>().ShouldNotBeNull();
+        serviceProvider.GetService<ITestBehavior>().ShouldNotBeNull();
+        serviceProvider.GetService<IRequestHandler<TestQuery, string>>().ShouldNotBeNull();
     }
 
     public void Dispose()

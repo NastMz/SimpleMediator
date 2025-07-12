@@ -32,8 +32,8 @@ public class PublisherTests : IDisposable
         await _publisher.Publish(notification);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("publisher test");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: publisher test");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("publisher test");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: publisher test");
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public class PublisherTests : IDisposable
         await _publisher.Publish(notification);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("untyped publisher test");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: untyped publisher test");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("untyped publisher test");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: untyped publisher test");
     }
 
     [Fact]
@@ -61,9 +61,9 @@ public class PublisherTests : IDisposable
         await _publisher.Publish(notification);
 
         // Assert
-        TestEventNotificationHandler.ReceivedEvents.Should().Contain((123, "OrderPlaced"));
-        TestNotificationHandler.ReceivedMessages.Should().BeEmpty();
-        SecondTestNotificationHandler.ReceivedMessages.Should().BeEmpty();
+        TestEventNotificationHandler.ReceivedEvents.ShouldContain((123, "OrderPlaced"));
+        TestNotificationHandler.ReceivedMessages.ShouldBeEmpty();
+        SecondTestNotificationHandler.ReceivedMessages.ShouldBeEmpty();
     }
 
     [Fact]
@@ -79,8 +79,8 @@ public class PublisherTests : IDisposable
         await _publisher.Publish(notification2);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Equal("first", "second");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Equal("Second: first", "Second: second");
+        TestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "first", "second" });
+        SecondTestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "Second: first", "Second: second" });
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class PublisherTests : IDisposable
         await _publisher.Publish(notification, cts.Token);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("cancellation test");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("cancellation test");
     }
 
     [Fact]
@@ -120,9 +120,9 @@ public class PublisherTests : IDisposable
         await _publisher.Publish(eventNotification);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("test message");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: test message");
-        TestEventNotificationHandler.ReceivedEvents.Should().Contain((456, "UserDeleted"));
+        TestNotificationHandler.ReceivedMessages.ShouldContain("test message");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: test message");
+        TestEventNotificationHandler.ReceivedEvents.ShouldContain((456, "UserDeleted"));
     }
 
     [Fact]
@@ -139,13 +139,13 @@ public class PublisherTests : IDisposable
         await Task.WhenAll(tasks);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().HaveCount(10);
-        SecondTestNotificationHandler.ReceivedMessages.Should().HaveCount(10);
+        TestNotificationHandler.ReceivedMessages.Count.ShouldBe(10);
+        SecondTestNotificationHandler.ReceivedMessages.Count.ShouldBe(10);
         
         foreach (var i in Enumerable.Range(1, 10))
         {
-            TestNotificationHandler.ReceivedMessages.Should().Contain($"message-{i}");
-            SecondTestNotificationHandler.ReceivedMessages.Should().Contain($"Second: message-{i}");
+            TestNotificationHandler.ReceivedMessages.ShouldContain($"message-{i}");
+            SecondTestNotificationHandler.ReceivedMessages.ShouldContain($"Second: message-{i}");
         }
     }
 

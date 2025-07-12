@@ -32,7 +32,7 @@ public class MediatorTests : IDisposable
         var result = await _mediator.Send(query);
 
         // Assert
-        result.Should().Be("Processed: test data");
+        result.ShouldBe("Processed: test data");
     }
 
     [Fact]
@@ -45,9 +45,9 @@ public class MediatorTests : IDisposable
         var result = await _mediator.Send(query);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Value.Should().Be("Response for ID: 123");
-        result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        result.ShouldNotBeNull();
+        result.Value.ShouldBe("Response for ID: 123");
+        result.Timestamp.ShouldBeInRange(DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow.AddSeconds(1));
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class MediatorTests : IDisposable
         await _mediator.Send(command);
 
         // Assert
-        TestCommandHandler.ProcessedCommands.Should().Contain("test command");
+        TestCommandHandler.ProcessedCommands.ShouldContain("test command");
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class MediatorTests : IDisposable
         var result = await _mediator.Send(query);
 
         // Assert
-        result.Should().Be("Processed: untyped test");
+        result.ShouldBe("Processed: untyped test");
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class MediatorTests : IDisposable
         var result = await _mediator.Send(command);
 
         // Assert
-        result.Should().NotBeNull();
-        TestCommandHandler.ProcessedCommands.Should().Contain("untyped command");
+        result.ShouldNotBeNull();
+        TestCommandHandler.ProcessedCommands.ShouldContain("untyped command");
     }
 
     [Fact]
@@ -101,8 +101,8 @@ public class MediatorTests : IDisposable
         await _mediator.Publish(notification);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("test message");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: test message");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("test message");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: test message");
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class MediatorTests : IDisposable
         await _mediator.Publish(notification);
 
         // Assert
-        TestEventNotificationHandler.ReceivedEvents.Should().Contain((42, "UserCreated"));
+        TestEventNotificationHandler.ReceivedEvents.ShouldContain((42, "UserCreated"));
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public class MediatorTests : IDisposable
         await _mediator.Publish(notification);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("untyped message");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: untyped message");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("untyped message");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: untyped message");
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class MediatorTests : IDisposable
         }
 
         // Assert
-        results.Should().Equal(0, 1, 2);
+        results.ShouldBe(new[] { 0, 1, 2 });
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class MediatorTests : IDisposable
         }
 
         // Assert
-        results.Should().Equal(0, 1);
+        results.ShouldBe(new object[] { 0, 1 });
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class MediatorTests : IDisposable
         });
 
         // Verify that cancellation was respected
-        results.Should().HaveCount(c => c <= 3, "some items should be yielded before cancellation");
+        results.Count.ShouldBeLessThanOrEqualTo(3, "some items should be yielded before cancellation");
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class MediatorTests : IDisposable
         var result = await _mediator.Send(query, cts.Token);
 
         // Assert
-        result.Should().Be("Processed: cancellation test");
+        result.ShouldBe("Processed: cancellation test");
     }
 
     [Fact]
@@ -216,6 +216,6 @@ public class MediatorTests : IDisposable
         await _mediator.Publish(notification, cts.Token);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("cancellation test");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("cancellation test");
     }
 }

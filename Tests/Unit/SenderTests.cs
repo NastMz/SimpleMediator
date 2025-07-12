@@ -32,7 +32,7 @@ public class SenderTests : IDisposable
         var result = await _sender.Send(query);
 
         // Assert
-        result.Should().Be("Processed: sender test");
+        result.ShouldBe("Processed: sender test");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class SenderTests : IDisposable
         await _sender.Send(command);
 
         // Assert
-        TestCommandHandler.ProcessedCommands.Should().Contain("sender command");
+        TestCommandHandler.ProcessedCommands.ShouldContain("sender command");
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class SenderTests : IDisposable
         var result = await _sender.Send(query);
 
         // Assert
-        result.Should().Be("Processed: untyped sender test");
+        result.ShouldBe("Processed: untyped sender test");
     }
 
     [Fact]
@@ -72,8 +72,8 @@ public class SenderTests : IDisposable
         var result = await _sender.Send(command);
 
         // Assert
-        result.Should().NotBeNull();
-        TestCommandHandler.ProcessedCommands.Should().Contain("untyped sender command");
+        result.ShouldNotBeNull();
+        TestCommandHandler.ProcessedCommands.ShouldContain("untyped sender command");
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class SenderTests : IDisposable
         }
 
         // Assert
-        results.Should().Equal(0, 1, 2);
+        results.ShouldBe(new[] { 0, 1, 2 });
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class SenderTests : IDisposable
         }
 
         // Assert
-        results.Should().Equal(0, 1);
+        results.ShouldBe(new object[] { 0, 1 });
     }
 
     [Fact]
@@ -136,8 +136,8 @@ public class SenderTests : IDisposable
         }
 
         // Assert
-        results.Should().HaveCount(3);
-        results.Should().Equal(0, 1, 2);
+        results.Count.ShouldBe(3);
+        results.ShouldBe(new[] { 0, 1, 2 });
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class SenderTests : IDisposable
         var result = await _sender.Send(query, cts.Token);
 
         // Assert
-        result.Should().Be("Processed: cancellation test");
+        result.ShouldBe("Processed: cancellation test");
     }
 
     [Fact]
@@ -164,9 +164,9 @@ public class SenderTests : IDisposable
         var result = await _sender.Send(query);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Value.Should().Be("Response for ID: 999");
-        result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        result.ShouldNotBeNull();
+        result.Value.ShouldBe("Response for ID: 999");
+        result.Timestamp.ShouldBeInRange(DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow.AddSeconds(1));
     }
 
     [Fact]

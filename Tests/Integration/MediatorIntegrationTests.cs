@@ -37,16 +37,16 @@ public class MediatorIntegrationTests : IDisposable
 
         // Act & Assert - Query
         var queryResult = await _mediator.Send(query);
-        queryResult.Should().Be("Processed: integration test");
+        queryResult.ShouldBe("Processed: integration test");
 
         // Act & Assert - Command
         await _mediator.Send(command);
-        TestCommandHandler.ProcessedCommands.Should().Contain("integration command");
+        TestCommandHandler.ProcessedCommands.ShouldContain("integration command");
 
         // Act & Assert - Notification
         await _mediator.Publish(notification);
-        TestNotificationHandler.ReceivedMessages.Should().Contain("integration notification");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: integration notification");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("integration notification");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: integration notification");
 
         // Act & Assert - Stream
         var streamResults = new List<int>();
@@ -54,7 +54,7 @@ public class MediatorIntegrationTests : IDisposable
         {
             streamResults.Add(item);
         }
-        streamResults.Should().Equal(0, 1, 2);
+        streamResults.ShouldBe(new[] { 0, 1, 2 });
     }
 
     [Fact]
@@ -70,8 +70,8 @@ public class MediatorIntegrationTests : IDisposable
         await _mediator.Publish(notification, cts.Token);
 
         // Assert
-        queryResult.Should().Be("Processed: cancellation test");
-        TestNotificationHandler.ReceivedMessages.Should().Contain("cancellation notification");
+        queryResult.ShouldBe("Processed: cancellation test");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("cancellation notification");
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class MediatorIntegrationTests : IDisposable
         await _mediator.Publish(notification);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("multiple handlers");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Contain("Second: multiple handlers");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("multiple handlers");
+        SecondTestNotificationHandler.ReceivedMessages.ShouldContain("Second: multiple handlers");
     }
 
     [Fact]
@@ -105,9 +105,9 @@ public class MediatorIntegrationTests : IDisposable
         stopwatch.Stop();
 
         // Assert
-        results.Should().HaveCount(1000);
-        results.Should().Equal(Enumerable.Range(0, 1000));
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(1000); // Should complete quickly without artificial delays
+        results.Count.ShouldBe(1000);
+        results.ShouldBe(Enumerable.Range(0, 1000));
+        stopwatch.ElapsedMilliseconds.ShouldBeLessThan(1000); // Should complete quickly without artificial delays
     }
 
     [Fact]
@@ -124,13 +124,13 @@ public class MediatorIntegrationTests : IDisposable
         await _mediator.PublishAll(notifications);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().HaveCount(50);
-        SecondTestNotificationHandler.ReceivedMessages.Should().HaveCount(50);
+        TestNotificationHandler.ReceivedMessages.Count.ShouldBe(50);
+        SecondTestNotificationHandler.ReceivedMessages.Count.ShouldBe(50);
 
         for (int i = 1; i <= 50; i++)
         {
-            TestNotificationHandler.ReceivedMessages.Should().Contain($"bulk-{i}");
-            SecondTestNotificationHandler.ReceivedMessages.Should().Contain($"Second: bulk-{i}");
+            TestNotificationHandler.ReceivedMessages.ShouldContain($"bulk-{i}");
+            SecondTestNotificationHandler.ReceivedMessages.ShouldContain($"Second: bulk-{i}");
         }
     }
 
@@ -146,11 +146,11 @@ public class MediatorIntegrationTests : IDisposable
         await _mediator.Publish(complexEvent);
 
         // Assert
-        queryResult.Should().NotBeNull();
-        queryResult.Value.Should().Be("Response for ID: 42");
-        queryResult.Timestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        queryResult.ShouldNotBeNull();
+        queryResult.Value.ShouldBe("Response for ID: 42");
+        queryResult.Timestamp.ShouldBeInRange(DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow.AddSeconds(1));
         
-        TestEventNotificationHandler.ReceivedEvents.Should().Contain((123, "ComplexEvent"));
+        TestEventNotificationHandler.ReceivedEvents.ShouldContain((123, "ComplexEvent"));
     }
 
     [Fact]
@@ -163,9 +163,9 @@ public class MediatorIntegrationTests : IDisposable
         var publisher = _serviceProvider.GetRequiredService<IPublisher>();
 
         // Assert - With scoped services in the same scope, they should be the same instance
-        mediator1.Should().BeSameAs(mediator2); // Scoped services within the same scope are reused
-        sender.Should().NotBeNull();
-        publisher.Should().NotBeNull();
+        mediator1.ShouldBeSameAs(mediator2); // Scoped services within the same scope are reused
+        sender.ShouldNotBeNull();
+        publisher.ShouldNotBeNull();
     }
 
     [Fact]
@@ -193,10 +193,10 @@ public class MediatorIntegrationTests : IDisposable
         await Task.WhenAll(tasks);
 
         // Assert
-        results.Should().HaveCount(10);
+        results.Count.ShouldBe(10);
         for (int i = 0; i < 10; i++)
         {
-            results.Should().Contain($"Processed: concurrent-{i}");
+            results.ShouldContain($"Processed: concurrent-{i}");
         }
     }
 

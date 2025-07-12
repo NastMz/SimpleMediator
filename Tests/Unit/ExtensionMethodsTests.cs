@@ -34,7 +34,7 @@ public class ExtensionMethodsTests : IDisposable
         await _mediator.Send(command);
 
         // Assert
-        TestCommandHandler.ProcessedCommands.Should().Contain("extension test");
+        TestCommandHandler.ProcessedCommands.ShouldContain("extension test");
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class ExtensionMethodsTests : IDisposable
         await _mediator.PublishAll(notifications);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Equal("first", "second", "third");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Equal("Second: first", "Second: second", "Second: third");
+        TestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "first", "second", "third" });
+        SecondTestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "Second: first", "Second: second", "Second: third" });
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ExtensionMethodsTests : IDisposable
         await _mediator.PublishAll(notifications, cts.Token);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("with cancellation");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("with cancellation");
     }
 
     [Fact]
@@ -101,9 +101,9 @@ public class ExtensionMethodsTests : IDisposable
         await _mediator.PublishAll(notifications);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Equal("test message", "another test");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Equal("Second: test message", "Second: another test");
-        TestEventNotificationHandler.ReceivedEvents.Should().Contain((789, "ProductCreated"));
+        TestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "test message", "another test" });
+        SecondTestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "Second: test message", "Second: another test" });
+        TestEventNotificationHandler.ReceivedEvents.ShouldContain((789, "ProductCreated"));
     }
 
     [Fact]
@@ -121,8 +121,8 @@ public class ExtensionMethodsTests : IDisposable
         await _publisher.PublishAll(notifications);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Equal("publisher first", "publisher second");
-        SecondTestNotificationHandler.ReceivedMessages.Should().Equal("Second: publisher first", "Second: publisher second");
+        TestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "publisher first", "publisher second" });
+        SecondTestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "Second: publisher first", "Second: publisher second" });
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class ExtensionMethodsTests : IDisposable
         await _publisher.PublishAll(notifications, cts.Token);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Contain("publisher with cancellation");
+        TestNotificationHandler.ReceivedMessages.ShouldContain("publisher with cancellation");
     }
 
     [Fact]
@@ -169,9 +169,9 @@ public class ExtensionMethodsTests : IDisposable
         stopwatch.Stop();
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().HaveCount(100);
-        SecondTestNotificationHandler.ReceivedMessages.Should().HaveCount(100);
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(1000); // Should complete within 1 second
+        TestNotificationHandler.ReceivedMessages.Count.ShouldBe(100);
+        SecondTestNotificationHandler.ReceivedMessages.Count.ShouldBe(100);
+        stopwatch.ElapsedMilliseconds.ShouldBeLessThan(1000); // Should complete within 1 second
     }
 
     [Fact]
@@ -192,6 +192,6 @@ public class ExtensionMethodsTests : IDisposable
         await _publisher.PublishAll(notifications);
 
         // Assert
-        TestNotificationHandler.ReceivedMessages.Should().Equal("before", "after");
+        TestNotificationHandler.ReceivedMessages.ShouldBe(new[] { "before", "after" });
     }
 }
